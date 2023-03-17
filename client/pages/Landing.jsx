@@ -75,13 +75,13 @@ export default function Landing({ navigation }) {
           }}>
           <Text
             style={{
-              fontSize: 30,
+              fontSize: 40,
               color: '#fff',
               fontWeight: 'bold',
-              marginTop: 60,
+              marginTop: 300,
 
             }}>
-            Welcome to Moroccan Fright Network
+            Welcome to MFN
           </Text>
         </View>
         {storedCredentials ? (
