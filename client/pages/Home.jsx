@@ -1,24 +1,83 @@
-// Import React
-import React, {useContext} from 'react';
-// Import required components
-import {SafeAreaView, StyleSheet, View, Button,TouchableOpacity, Text} from 'react-native';
-// Import Map and Marker
+import React, {useContext, useState, useEffect, useRef} from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  TextInput,
+  Alert,
+} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
-import {CredentialsContext} from '../components/CredentialsContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
 
-const Home = () => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {CredentialsContext} from '../components/CredentialsContext';
+
+const Home = ({navigation}) => {
+  const [markers, setMarkers] = useState([]);
+
+  const [searchValue, setSearchValue] = useState('');
+  const [filteredMarkers, setFilteredMarkers] = useState([]);
+
   const {storedCredentials, setStoredCredentials} =
     useContext(CredentialsContext);
-  const navigation = useNavigation();
+  useEffect(() => {
+    async function fetchMarkers() {
+      const appUrl = 'http://192.168.9.22:3000';
+      const url = `${appUrl}/api/users/get`;
 
- 
+      const response = await fetch(url);
+      const data = await response.json();
+      setMarkers(data);
+    }
+    fetchMarkers();
+  }, [markers]);
+
+  const handleSearch = () => {
+    const filtered = markers.filter(
+      marker =>
+        marker.companyName.toLowerCase() === searchValue.toLowerCase() ||
+        marker.address.toLowerCase() === searchValue.toLowerCase(),
+    );
+    setFilteredMarkers(filtered);
+    if (filtered.length > 0) {
+      const region = {
+        latitude: parseFloat(filtered[0].location.latitude),
+        longitude: parseFloat(filtered[0].location.longitude),
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      };
+
+      mapRef.current.animateToRegion(region, 1000);
+
+      setSearchValue('');
+    } else {
+      Alert.alert('No results found');
+    }
+  };
+
+  const mapRef = useRef(null);
+
+  const handleMarkerClick = (companyName, address, email, phone) => {
+    Alert.alert(
+      `Company:${companyName}\n`,
+      `Address:${address}\nEmail:${email}\nPhone:${phone}
+      `,
+      [
+        {
+          text: 'Ok',
+          style: 'cancel',
+        },
+      ],
+    );
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
         <MapView
+          ref={mapRef}
           style={styles.mapStyle}
           initialRegion={{
             latitude: 32.3123,
@@ -27,30 +86,49 @@ const Home = () => {
             longitudeDelta: 0.0421,
           }}
           customMapStyle={mapStyle}>
-          <Marker
-            draggable
-            coordinate={{
-              latitude: 32.3123,
-              longitude: -9.2311,
-            }}
-            onDragEnd={e => alert(JSON.stringify(e.nativeEvent.coordinate))}
-            title={'Test Marker'}
-            description={'This is a description of the marker'}
-          />
+          {markers.map(marker => (
+            <Marker
+              key={marker._id}
+              coordinate={{
+                latitude: parseFloat(marker.location.latitude),
+                longitude: parseFloat(marker.location.longitude),
+              }}
+              title={marker.email}
+              description={marker.companyName}
+              onPress={() => {
+                handleMarkerClick(
+                  marker.companyName,
+                  marker.address,
+                  marker.email,
+                  marker.phone,
+                );
+              }}>
+              <Image
+                source={require('../assets/img/building.png')}
+                style={{height: 35, width: 35}}
+              />
+            </Marker>
+          ))}
         </MapView>
-        <TouchableOpacity
-          onPress={
-            () => navigation.navigate('Pages', {screen: 'Profile'})
-          }
-        >
-          <Text>Profile</Text>
-        </TouchableOpacity>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            onChangeText={text => setSearchValue(text)}
+            value={searchValue}
+            placeholder="Search for a company"
+            placeholderTextColor="#B0B0B0"
+          />
+          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+            <Text style={styles.buttonText}>Search</Text>
+          </TouchableOpacity>
+        </View>
+        
       </View>
     </SafeAreaView>
   );
 };
 export default Home;
-const mapStyle = [
+mapStyle = [
   {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
   {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
   {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
@@ -146,5 +224,46 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  button: {
+    backgroundColor: '#000000',
+    width: 200,
+    height: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    paddingLeft: 10,
+  },
+  searchInput: {
+    backgroundColor: '#FFFFFF',
+    color: '#000000',
+    width: '80%',
+    height: 50,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+  },
+  searchButton: {
+    backgroundColor: '#000000',
+    width: 90,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
