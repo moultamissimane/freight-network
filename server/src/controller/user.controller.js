@@ -8,15 +8,15 @@ const asyncHandler = require('express-async-handler');
 // register user
 const registerUser = asyncHandler(async (req, res) => {
     const
-        { companyName, founder, email, password, phone, address,location } = req.body;
+        { companyName, founder, email, password, phone, address, location } = req.body;
     if
         (
         !companyName ||
-        !founder ||
+        // !founder ||
         !email ||
         !password ||
         !phone ||
-        !address ||
+        !address ,
         !location
     ) {
         res.status(400);
@@ -40,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //create user
     const user = await User.create({
         companyName,
-        founder,
+        // founder,
         email,
         password: hashedPassword,
         phone,
@@ -113,7 +113,7 @@ const getUserById = asyncHandler(async (req, res) => {
 //get all users
 const getAllUsers = asyncHandler(async (req, res) => {
     const users = await User.find({});
-    res.status(200).json(users);
+    res.json(users);
 }
 );
 
