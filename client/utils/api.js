@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const URL = 'http://192.168.1.105:5000';
+const URL = 'http://192.168.9.22:3000';
 
-export async function LoginUser({email, password}) {
+export async function LoginUser({ email, password }) {
     const res = await axios.post(`${URL}/api/users/login`, {
         email,
         password,
@@ -10,7 +10,7 @@ export async function LoginUser({email, password}) {
     return res.data;
 }
 
-export async function RegisterUser({companyName, Founder, email, password, phone, address, ICE}) {
+export async function RegisterUser({ companyName, Founder, email, password, phone, address, ICE, location }) {
     const res = await axios.post(`${URL}/api/users/register`, {
         companyName,
         Founder,
@@ -19,6 +19,7 @@ export async function RegisterUser({companyName, Founder, email, password, phone
         phone,
         address,
         ICE,
+        location,
     });
     return res.data;
 }
