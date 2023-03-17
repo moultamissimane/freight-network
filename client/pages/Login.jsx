@@ -8,23 +8,23 @@ import {
   Alert,
   Pressable,
 } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, {useContext, useState} from 'react';
 import m from '../assets/img/login.jpg';
-import { LoginUser } from '../utils/api';
-import { useMutation } from 'react-query';
-import { CredentialsContext } from '../components/CredentialsContext';
+import {LoginUser} from '../utils/api';
+import {useMutation} from 'react-query';
+import {CredentialsContext} from '../components/CredentialsContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function LoginSecrin({ navigation }) {
+export default function LoginSecrin({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { storedCredentials, setStoredCredentials } =
+  const {storedCredentials, setStoredCredentials} =
     useContext(CredentialsContext);
 
-  const { mutate, isLoading } = useMutation(LoginUser, {
+  const {mutate, isLoading} = useMutation(LoginUser, {
     onSuccess: data => {
       persisLogin(data);
-      navigation.navigate('Pages', { screen: 'Home' });
+      navigation.navigate('Pages', {screen: 'Home'});
     },
     onError: error => {
       Alert.alert('Error', error.response.data.message);
@@ -43,7 +43,7 @@ export default function LoginSecrin({ navigation }) {
         console.error(error);
       });
   };
-  console.log(storedCredentials);
+  // console.log(storedCredentials);
   return (
     <View style={styles.container}>
       <View
@@ -52,25 +52,35 @@ export default function LoginSecrin({ navigation }) {
         }}>
         <Text
           style={{
-            color: 'black',
+            color: '#54b6ff',
             fontSize: 30,
             fontWeight: 'bold',
             justifyContent: 'center',
             alignItems: 'center',
             textAlign: 'center',
-            marginTop: 60,
+            marginTop: 200,
+          }}>
+          Login
+        </Text>
+        <Text
+          style={{
+            color: 'black',
+            fontSize: 15,
+            fontWeight: 'bold',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center',
+            marginTop: 15,
             maxWidth: '60%',
             marginBottom: 20,
           }}>
-          Welcome Back 
+          Welcome Back
         </Text>
       </View>
       <TextInput
         style={styles.input}
         placeholder="Email"
         placeholderTextColor="#54b6ff"
-        keyboardType="email-address"
-        autoCapitalize="none"
         onChangeText={text => setEmail(text)}
         value={email}
       />
@@ -79,33 +89,29 @@ export default function LoginSecrin({ navigation }) {
         placeholderTextColor="#54b6ff"
         secureTextEntry
         placeholder="Password"
-        autoCapitalize="none"
         onChangeText={text => setPassword(text)}
         value={password}
       />
       <Pressable
-        onPress={() => mutate({ email, password })}
+        onPress={() => mutate({email, password})}
         style={styles.button}>
         <Text style={styles.buttonTitle}>Login</Text>
       </Pressable>
       <View style={styles.footerView}>
         <Text style={styles.footerText}>
-          Don't have an account?{' '}
+          New to MFN?{' '}
           <Text
             onPress={() => navigation.navigate('Register')}
             style={styles.footerLink}>
             Sign up
           </Text>
         </Text>
-         </View>
+        </View>
       <Text
-      style={styles.back}
         onPress={() =>
-          navigation.navigate('Pages', {
-            screen: 'Landing'
-          })
+          navigation.navigate('Landing')
         }>
-        Back
+        Go Back to landingPage
       </Text>
     </View>
   );
@@ -129,17 +135,9 @@ const styles = StyleSheet.create({
     width: 350,
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: '#F0F0F0',
+    backgroundColor: '#f3f5f5',
     marginBottom: 10,
     padding: 15,
-  },
-  back: {
-    color: '#54b6ff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 20,
-    shadowColor: '#000',
-    elevation: 50,
   },
   button: {
     backgroundColor: '#54b6ff',
@@ -173,7 +171,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   footerLink: {
-    color: '#54b6ff',
+    color: '#000',
     fontWeight: 'bold',
     fontSize: 16,
     shadowColor: '#000',
