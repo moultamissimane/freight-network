@@ -7,10 +7,6 @@ const userSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        founder: {
-            type: String,
-            required: true,
-        },
         email: {
             type: String,
             required: true,
@@ -31,18 +27,16 @@ const userSchema = mongoose.Schema(
         },
         location:
         {
-            Latitude: {
+            latitude: {
                 type: Number,
-                required: true,
             },
-            Longitude: {
+            longitude: {
                 type: Number,
-                required: true,
             }
         },
         ICE: {
             type: Number,
-            unique: true,
+            // unique: true,
         },
     },
     {
